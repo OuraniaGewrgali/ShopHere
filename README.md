@@ -84,6 +84,7 @@
    
    Όλα τα αρχεία HTML/CSS καθώς και το Django project με όλες τις λειτουργίες της εφαρμογής βρίσκονται στον φάκελο bookshop/ του αποθετηρίου.
    Εκτέλεση:
+   source .venv/bin/activate
 
    python manage.py runserver
    
