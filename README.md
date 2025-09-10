@@ -81,6 +81,7 @@
 <img width="1922" height="1374" alt="image" src="https://github.com/user-attachments/assets/7b7944ba-2df7-446f-a008-86c44a93962b" />
 
 5. Λειτουργική οθόνη
+   
    Όλα τα αρχεία HTML/CSS καθώς και το Django project με όλες τις λειτουργίες της εφαρμογής βρίσκονται στον φάκελο bookshop/ του αποθετηρίου.
    Εκτέλεση:
    python manage.py runserver
