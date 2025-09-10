@@ -71,3 +71,8 @@
 
 
 Έξοδος: Σελίδα «Επιτυχής παραγγελία» ή μήνυμα σφάλματος (π.χ. ανεπαρκές απόθεμα).
+
+4. Σχήμα βάσης δεδομένων
+
+   <img width="1221" height="1041" alt="image" src="https://github.com/user-attachments/assets/e38e069d-c74e-4da6-ab1d-222bcb5475f9" />
+
