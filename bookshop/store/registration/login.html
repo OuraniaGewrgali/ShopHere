@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Σύνδεση{% endblock %}
+{% block content %}
+<h2>Σύνδεση</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Είσοδος</button>
+</form>
+<p>Δεν έχεις λογαριασμό; <a href="{% url 'shop:signup' %}">Εγγραφή</a></p>
+{% endblock %}

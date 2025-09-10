@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Καλάθι – BookStoreHub{% endblock %}
+{% block content %}
+<h2>Το Καλάθι μου</h2>
+
+{% if items %}
+<table class="cart">
+  <tr><th>Βιβλίο</th><th>Ποσότητα</th><th>Μερικό</th><th></th></tr>
+  {% for row in items %}
+    <tr>
+      <td>{{ row.book.title }} — {{ row.book.author }} ({{ row.book.price }} €)</td>
+      <td>{{ row.qty }}</td>
+      <td>{{ row.subtotal|floatformat:2 }} €</td>
+      <td><a class="btn-outline" href="{% url 'store:cart_remove' row.book.pk %}">Αφαίρεση</a></td>
+    </tr>
+  {% endfor %}
+</table>
+<p class="total"><strong>Σύνολο: {{ total|floatformat:2 }} €</strong></p>
+<a class="btn" href="{% url 'store:checkout' %}">Ολοκλήρωση (mock)</a>
+{% else %}
+<p>Το καλάθι είναι άδειο.</p>
+{% endif %}
+{% endblock %}

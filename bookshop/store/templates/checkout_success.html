@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Επιτυχής Παραγγελία – BookStoreHub{% endblock %}
+{% block content %}
+  <h2>Ευχαριστούμε για την παραγγελία!</h2>
+  <p>Το απόθεμα ενημερώθηκε και το καλάθι άδειασε (demo mode).</p>
+  <a class="btn" href="{% url 'store:book_list' %}">Συνέχεια στα βιβλία</a>
+{% endblock %}

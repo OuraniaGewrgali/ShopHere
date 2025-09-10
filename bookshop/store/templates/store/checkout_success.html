@@ -1,0 +1,7 @@
+{% extends "store/base.html" %}
+{% block title %}Ολοκληρώθηκε – BookStoreHub{% endblock %}
+{% block content %}
+  <h2>Η παραγγελία ολοκληρώθηκε!</h2>
+  <p>Ευχαριστούμε για την αγορά σου.</p>
+  <p><a class="btn" href="{% url 'store:book_list' %}">Επιστροφή στα βιβλία</a></p>
+{% endblock %}

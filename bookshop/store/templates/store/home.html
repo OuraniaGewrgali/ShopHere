@@ -1,0 +1,62 @@
+{% extends "store/base.html" %}
+{% block title %}Αρχική – BookStoreHub{% endblock %}
+{% block content %}
+  <section class="hero">
+    <div class="hero-inner">
+      <h2>Καλώς ήρθες στο BookStoreHub</h2>
+      <p class="hero-sub">Ανακάλυψε κλασικά, νέες κυκλοφορίες και τεχνικά διαμάντια.</p>
+      <div class="hero-actions">
+        <a class="btn" href="{% url 'store:book_list' %}">Περιηγήσου στα βιβλία</a>
+        <a class="btn-outline" href="{% url 'store:cart_view' %}">Δες το καλάθι</a>
+      </div>
+    </div>
+  </section>
+
+  {% if categories %}
+  <section class="mt">
+    <h3>Κατηγορίες</h3>
+    <div class="chips">
+      {% for c in categories %}
+        <a class="chip" href="{% url 'store:book_list' %}?category={{ c.slug }}">{{ c.name }}</a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if featured %}
+  <section class="mt">
+    <h3>Προτεινόμενα</h3>
+    <div class="book-grid">
+      {% for b in featured %}
+        <article class="book-card">
+          <a href="{% url 'store:book_detail' b.pk %}">
+            {% if b.cover %}
+              <img class="cover-img" src="{{ b.cover.url }}" alt="{{ b.title }}">
+            {% elif b.cover_url %}
+              <img class="cover-img" src="{{ b.cover_url }}" alt="{{ b.title }}">
+            {% else %}
+              <div class="cover-ph"></div>
+            {% endif %}
+          </a>
+          <div class="body">
+            <a href="{% url 'store:book_detail' b.pk %}"><h3>{{ b.title }}</h3></a>
+            <div class="muted">{{ b.author }}</div>
+            <div class="meta">
+              <div class="price">€{{ b.price }}</div>
+              {% if b.stock > 0 %}
+                <span class="stock-ok">Σε απόθεμα</span>
+              {% else %}
+                <span class="stock-no">Εξαντλημένο</span>
+              {% endif %}
+            </div>
+            <div class="actions">
+              <a class="btn" href="{% url 'store:cart_add' b.id %}">+ Καλάθι</a>
+              <a class="btn-outline" href="{% url 'store:book_detail' b.pk %}">Λεπτομέρειες</a>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+{% endblock %}

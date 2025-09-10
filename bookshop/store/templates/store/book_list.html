@@ -1,0 +1,57 @@
+{% extends "store/base.html" %}
+{% block title %}Βιβλία – BookStoreHub{% endblock %}
+
+{% block content %}
+  <h2>Όλα τα Βιβλία</h2>
+
+  <form method="get" class="filters">
+    <input type="search" name="q" placeholder="Αναζήτηση τίτλου/συγγραφέα" value="{{ form.data.q }}">
+    <select name="category">
+      <option value="">Όλες οι κατηγορίες</option>
+      {% for c in categories %}
+        <option value="{{ c.slug }}" {% if form.data.category == c.slug %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+    <input type="number" name="min_price" step="0.01" placeholder="Ελάχιστη τιμή" value="{{ form.data.min_price }}">
+    <input type="number" name="max_price" step="0.01" placeholder="Μέγιστη τιμή" value="{{ form.data.max_price }}">
+    {{ form.sort }}
+    <button class="btn" type="submit">Φίλτρα</button>
+  </form>
+
+  {% if books %}
+    <div class="book-grid">
+      {% for b in books %}
+        <article class="book-card">
+          <a href="{% url 'store:book_detail' b.pk %}">
+            {% if b.cover %}
+              <img class="cover-img" src="{{ b.cover.url }}" alt="{{ b.title }}">
+            {% elif b.cover_url %}
+              <img class="cover-img" src="{{ b.cover_url }}" alt="{{ b.title }}">
+            {% else %}
+              <div class="cover-ph"></div>
+            {% endif %}
+          </a>
+
+          <div class="body">
+            <a href="{% url 'store:book_detail' b.pk %}"><h3>{{ b.title }}</h3></a>
+            <div class="muted">{{ b.author }}</div>
+            <div class="meta">
+              <div class="price">€{{ b.price }}</div>
+              {% if b.stock > 0 %}
+                <span class="stock-ok">Σε απόθεμα</span>
+              {% else %}
+                <span class="stock-no">Εξαντλημένο</span>
+              {% endif %}
+            </div>
+            <div class="actions">
+              <a class="btn" href="{% url 'store:cart_add' b.id %}">+ Καλάθι</a>
+              <a class="btn-outline" href="{% url 'store:book_detail' b.pk %}">Λεπτομέρειες</a>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">Δεν βρέθηκαν βιβλία.</p>
+  {% endif %}
+{% endblock %}

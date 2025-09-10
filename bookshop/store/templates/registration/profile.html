@@ -1,0 +1,64 @@
+{% extends "store/base.html" %}
+{% block title %}Το προφίλ μου{% endblock %}
+
+{% block content %}
+  <div style="padding:.5rem 1rem; background:#fff7ed; border:1px solid #fdba74; border-left:6px solid #f97316; border-radius:8px; margin-bottom:12px;">
+  </div>
+
+  <h2>Το προφίλ μου</h2>
+
+  <div class="profile-grid">
+    <div class="card">
+      <h3>Στοιχεία</h3>
+      <div class="avatar-row">
+        {% if profile_obj and profile_obj.avatar %}
+          <img class="avatar" src="{{ profile_obj.avatar.url }}" alt="{{ request.user.username }}">
+        {% else %}
+          <div class="avatar avatar--ph">{{ request.user.username|first|upper }}</div>
+        {% endif %}
+        <div>
+          <div><strong>{{ request.user.username }}</strong> <small class="muted">({{ request.user.email }})</small></div>
+          {% if profile_obj and profile_obj.display_name %}
+            <div class="muted">Display name: {{ profile_obj.display_name }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <form method="post" enctype="multipart/form-data" class="mt">
+        {% csrf_token %}
+        <p>{{ form.display_name.label_tag }} {{ form.display_name }}</p>
+        <p>{{ form.avatar.label_tag }} {{ form.avatar }}</p>
+        <button class="btn" type="submit">Αποθήκευση</button>
+        <a class="btn-outline" href="{% url 'password_change' %}">Αλλαγή κωδικού</a>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Στατιστικά</h3>
+      <ul class="stats">
+        <li><strong>{{ total_orders }}</strong> παραγγελίες</li>
+        <li><strong>{{ books_bought }}</strong> βιβλία αγορασμένα</li>
+        <li>Μέλος από: <strong>{{ request.user.date_joined|date:"d/m/Y" }}</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  {% if orders %}
+    <h3 class="mt">Τελευταίες παραγγελίες</h3>
+    <div class="orders">
+      {% for o in orders %}
+        <div class="order card">
+          <div class="order-head">
+            <div>#{{ o.id }} — {{ o.created_at|date:"d/m/Y H:i" }}</div>
+            <div>Σύνολο: €{{ o.total }}</div>
+          </div>
+          <ul class="order-items">
+            {% for it in o.items.all %}
+              <li>{{ it.qty }} × {{ it.book.title }} — €{{ it.price }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}

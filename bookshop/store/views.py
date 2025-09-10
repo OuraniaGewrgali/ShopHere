@@ -1,0 +1,140 @@
+from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q
+from django.contrib import messages
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login as auth_login
+from django.contrib.auth.decorators import login_required
+
+from .models import Book, Category
+from .forms import BookFilterForm
+
+CART_SESSION_KEY = "cart"
+
+def _get_cart(request):
+    return request.session.get(CART_SESSION_KEY, {})
+
+def _save_cart(request, cart):
+    request.session[CART_SESSION_KEY] = cart
+    request.session.modified = True
+
+def book_list(request):
+    form = BookFilterForm(request.GET or None)
+    qs = Book.objects.select_related("category").all()
+
+    if form.is_valid():
+        q = form.cleaned_data.get("q")
+        cat = form.cleaned_data.get("category")
+        sort = form.cleaned_data.get("sort") or "-created_at"
+        min_p = form.cleaned_data.get("min_price")
+        max_p = form.cleaned_data.get("max_price")
+
+        if q:
+            qs = qs.filter(Q(title__icontains=q) | Q(author__icontains=q) | Q(description__icontains=q))
+        if cat:
+            qs = qs.filter(Q(category__slug=cat) | Q(category__name__iexact=cat))
+        if min_p is not None:
+            qs = qs.filter(price__gte=min_p)
+        if max_p is not None and max_p > 0:
+            qs = qs.filter(price__lte=max_p)
+
+        qs = qs.order_by(sort)
+
+    categories = Category.objects.all().order_by("name")
+    return render(request, "store/book_list.html", {"books": qs, "categories": categories, "form": form})
+
+def book_detail(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    return render(request, "store/book_detail.html", {"book": book})
+
+def cart_view(request):
+    cart = _get_cart(request)
+    ids = list(map(int, cart.keys()))
+    items, total = [], 0.0
+    if ids:
+        for book in Book.objects.filter(id__in=ids):
+            qty = int(cart.get(str(book.id), 0))
+            sub = qty * float(book.price)
+            total += sub
+            items.append({"book": book, "qty": qty, "subtotal": sub})
+    return render(request, "store/cart.html", {"items": items, "total": total})
+
+def cart_add(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    cart = _get_cart(request)
+    current = int(cart.get(str(book.id), 0))
+    if book.stock <= current:
+        messages.warning(request, "Δεν υπάρχει άλλο διαθέσιμο απόθεμα για αυτό το βιβλίο.")
+    else:
+        cart[str(book.id)] = current + 1
+        _save_cart(request, cart)
+        messages.success(request, f"Προστέθηκε στο καλάθι: {book.title}")
+    return redirect("store:cart_view")
+
+def cart_remove(request, pk):
+    cart = _get_cart(request)
+    if str(pk) in cart:
+        del cart[str(pk)]
+        _save_cart(request, cart)
+        messages.info(request, "Το βιβλίο αφαιρέθηκε από το καλάθι.")
+    return redirect("store:cart_view")
+
+def checkout(request):
+    cart = _get_cart(request)
+    if not cart:
+        messages.warning(request, "Το καλάθι είναι άδειο.")
+        return redirect("store:book_list")
+
+    ids = list(map(int, cart.keys()))
+    books = {b.id: b for b in Book.objects.filter(id__in=ids)}
+    for bid, qty in cart.items():
+        bid = int(bid)
+        if books[bid].stock < qty:
+            messages.error(request, f"Μη επαρκές απόθεμα για: {books[bid].title}")
+            return redirect("store:cart_view")
+
+    for bid, qty in cart.items():
+        b = books[int(bid)]
+        b.stock -= qty
+        b.save()
+
+    _save_cart(request, {})
+    return redirect("store:checkout_success")
+
+def checkout_success(request):
+    return render(request, "store/checkout_success.html")
+
+# -------- ΝΕΑ: Signup & Profile --------
+def signup(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, "Ο λογαριασμός δημιουργήθηκε!")
+            auth_login(request, user)
+            return redirect("store:book_list")
+    else:
+        form = UserCreationForm()
+    return render(request, "store/signup.html", {"form": form})
+
+@login_required
+def profile(request):
+    return render(request, "registration/profile.html")
+
+
+def home(request):
+    featured = Book.objects.select_related("category").filter(featured=True)[:8]
+    categories = Category.objects.all().order_by("name")[:12]
+    return render(request, "store/home.html", {"featured": featured, "categories": categories})
+
+from django.contrib.auth.views import LoginView, LogoutView
+
+
+def login_view(request, *args, **kwargs):
+    # Χρησιμοποίησε το registration/login.html (εκεί που βάζουμε τα templates μας)
+    kwargs.setdefault("template_name", "registration/login.html")
+    return LoginView.as_view(**kwargs)(request, *args, **kwargs)
+
+
+def logout_view(request, *args, **kwargs):
+    kwargs.setdefault("next_page", "store:book_list")
+    return LogoutView.as_view(**kwargs)(request, *args, **kwargs)

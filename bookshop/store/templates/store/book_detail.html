@@ -1,0 +1,32 @@
+{% extends "store/base.html" %}
+{% block title %}{{ book.title }} – BookStoreHub{% endblock %}
+
+{% block content %}
+  <div class="detail">
+    {% if book.cover %}
+      <img class="detail-cover" src="{{ book.cover.url }}" alt="{{ book.title }}">
+    {% elif book.cover_url %}
+      <img class="detail-cover" src="{{ book.cover_url }}" alt="{{ book.title }}">
+    {% else %}
+      <div class="detail-cover"></div>
+    {% endif %}
+
+    <div>
+      <h2>{{ book.title }}</h2>
+      <p class="muted">Συγγραφέας: {{ book.author }}</p>
+      <p>{{ book.description }}</p>
+      <p class="price">€{{ book.price }}</p>
+
+      {% if book.stock > 0 %}
+        <p class="stock-ok">Διαθέσιμο ({{ book.stock }})</p>
+        <a class="btn" href="{% url 'store:cart_add' book.id %}">+ Προσθήκη στο καλάθι</a>
+      {% else %}
+        <p class="stock-no">Εξαντλημένο</p>
+      {% endif %}
+
+      <p style="margin-top:1rem;">
+        <a class="btn-outline" href="{% url 'store:book_list' %}">⟵ Πίσω</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}
