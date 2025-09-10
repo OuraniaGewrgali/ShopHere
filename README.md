@@ -75,3 +75,13 @@
 4. Σχήμα βάσης δεδομένων
 
 <img width="1221" height="1041" alt="image" src="https://github.com/user-attachments/assets/12ca67ac-dbdc-4c61-ab93-5a96e0b20fd3" />
+
+
+
+<img width="1922" height="1374" alt="image" src="https://github.com/user-attachments/assets/7b7944ba-2df7-446f-a008-86c44a93962b" />
+
+5. Λειτουργική οθόνη
+   Όλα τα αρχεία HTML/CSS καθώς και το Django project με όλες τις λειτουργίες της εφαρμογής βρίσκονται στον φάκελο bookshop/ του αποθετηρίου.
+   Εκτέλεση:
+   python manage.py runserver
+Έπειτα άνοιγμα στο http://127.0.0.1:8000/
