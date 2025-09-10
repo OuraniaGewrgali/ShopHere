@@ -74,5 +74,4 @@
 
 4. Σχήμα βάσης δεδομένων
 
-   <img width="1221" height="1041" alt="image" src="https://github.com/user-attachments/assets/e38e069d-c74e-4da6-ab1d-222bcb5475f9" />
-
+<img width="1221" height="1041" alt="image" src="https://github.com/user-attachments/assets/12ca67ac-dbdc-4c61-ab93-5a96e0b20fd3" />
